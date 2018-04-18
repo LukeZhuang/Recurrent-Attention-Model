@@ -1,0 +1,2 @@
+model_checkpoint_path: "RAM.ckpt"
+all_model_checkpoint_paths: "RAM.ckpt"
