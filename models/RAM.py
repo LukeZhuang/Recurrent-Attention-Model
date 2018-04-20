@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import warnings
 warnings.filterwarnings("ignore")
 import tensorflow as tf
@@ -8,8 +10,6 @@ import matplotlib.pyplot as plt
 import random
 import math
 import time
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("../mnist/", one_hot=True)
 
 class Config(object):
     def __init__(self):
@@ -145,6 +145,8 @@ class RAM(Layer):
         return loss,accuracy
     
 if __name__=="__main__":
+    from tensorflow.examples.tutorials.mnist import input_data
+    mnist = input_data.read_data_sets("../mnist/", one_hot=True)
     
     num_train=mnist.train.num_examples
     num_val=mnist.validation.num_examples

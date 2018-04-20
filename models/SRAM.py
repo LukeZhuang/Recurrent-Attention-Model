@@ -1,5 +1,7 @@
 import warnings
 warnings.filterwarnings("ignore")
+import matplotlib
+matplotlib.use('Agg')
 import tensorflow as tf
 from tensorflow.python.layers.base import Layer
 import numpy as np
@@ -7,14 +9,12 @@ import matplotlib.pyplot as plt
 import random
 import math
 import time
-from tensorflow.examples.tutorials.mnist import input_data
-mnist = input_data.read_data_sets("../mnist/", one_hot=True)
 
 class Config(object):
     def __init__(self):
         self.batch_size=64
         self.img_size=28
-        self.RNN_unit=self.img_size*self.img_size
+        self.RNN_unit=256
         self.N_watch=10
         
 config=Config()
@@ -23,12 +23,15 @@ class SRAM(Layer):
     def __init__(self):
         self.X=tf.placeholder(dtype=tf.float32,shape=[None,config.img_size*config.img_size],name='X')
         self.y=tf.placeholder(dtype=tf.int64,shape=[None,10],name='y')
+        self.emission_net_low=tf.layers.Dense(units=512,name='low',_reuse=tf.AUTO_REUSE)
+        self.emission_net_high=tf.layers.Dense(units=config.img_size*config.img_size,name='high',_reuse=tf.AUTO_REUSE)
         self.predict_net=tf.layers.Dense(units=10)
         self.lstm_cell = tf.nn.rnn_cell.LSTMCell(config.RNN_unit, state_is_tuple=True)
         self.mask_his=[]
 
     def get_next_input(self,output, i):
-        attention_weight=tf.nn.softmax(output)
+        emis=self.emission_net_high(tf.nn.relu(self.emission_net_low(output)))
+        attention_weight=tf.nn.softmax(emis)
         self.mask_his.append(attention_weight)
         weighted_graph=self.X*attention_weight
         return weighted_graph
@@ -50,6 +53,8 @@ class SRAM(Layer):
 
     
 if __name__=="__main__":
+    from tensorflow.examples.tutorials.mnist import input_data
+    mnist = input_data.read_data_sets("../mnist/", one_hot=True)
     num_train=mnist.train.num_examples
     num_val=mnist.validation.num_examples
     num_test=mnist.test.num_examples
