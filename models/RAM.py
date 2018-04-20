@@ -84,6 +84,7 @@ class RAM(Layer):
         
         # normalize the location for next input
         normalized_loc=tf.tanh(loc_sample)
+        self.loc_his.append(normalized_loc)
         normalized_loc=tf.stop_gradient(normalized_loc)
 
         # output deep accurate baseline(value) network
@@ -102,7 +103,7 @@ class RAM(Layer):
         
         inputs=[self.gNet(self.X,start_location)]
         inputs.extend([0]*config.N_glimpse)
-        self.loc_his=[]
+        self.loc_his=[start_location]
         self.loglikelihood_his=[]
         self.baseline_his=[]
         
