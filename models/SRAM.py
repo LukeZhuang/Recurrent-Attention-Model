@@ -62,8 +62,11 @@ if __name__=="__main__":
     sram=SRAM()
     loss,accuracy=sram()
     
-    optimizier=tf.train.AdamOptimizer(learning_rate=1e-5)
-    train_step = optimizier.minimize(loss)
+    global_step = tf.Variable(0, trainable=False)
+    starter_learning_rate = 1e-3
+    learning_rate = tf.train.exponential_decay(starter_learning_rate, global_step,num_train//config.batch_size, 0.95, staircase=True)
+    optimizier=tf.train.RMSPropOptimizer(learning_rate=1e-3)
+    train_step = optimizier.minimize(loss,global_step=global_step)
     
     max_epoch=100
     print_every=200
@@ -99,7 +102,8 @@ if __name__=="__main__":
         tf.global_variables_initializer().run()
         max_acc=None
         for epoch in range(max_epoch):
-            print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())),'start epoch %d/%d:' % (epoch+1,max_epoch))
+            print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())),
+                  'start epoch %d/%d:, with learning rate = %f' % (epoch+1,max_epoch,sess.run(learning_rate)))
             train()
             loss_train,acc_train=eval(mnist.train,500)
             loss_val,acc_val=eval(mnist.validation,70)

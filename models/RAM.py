@@ -156,7 +156,7 @@ if __name__=="__main__":
     loss,accuracy=ram()
     
     global_step = tf.Variable(0, trainable=False)
-    starter_learning_rate = 1e-3
+    starter_learning_rate = 4e-3
     learning_rate = tf.train.exponential_decay(starter_learning_rate, global_step,num_train//config.batch_size, 0.95, staircase=True)
     optimizier=tf.train.RMSPropOptimizer(learning_rate=1e-3)
     train_step = optimizier.minimize(loss,global_step=global_step)
