@@ -18,7 +18,7 @@ class Config(object):
         self.img_size=28
         self.sensor_unit=256
         self.lstm_size=256
-        self.N_glimpse=6
+        self.N_glimpse=7
         self.MC_test=128
         self.loc_std=0.5
         self.tot_size=self.batch_size*self.MC_test
@@ -27,7 +27,7 @@ config=Config()
 
 class Glimpse_Network(Layer):
     def __init__(self):
-        self.glimspe_size=[5,10,15]
+        self.glimspe_size=[4,5,6]
         self.concat_size=5
         self.img_net=tf.layers.Dense(units=config.sensor_unit,name='glimpse_net/img_net')
         self.loc_net=tf.layers.Dense(units=config.sensor_unit,name='glimpse_net/loc_net')
